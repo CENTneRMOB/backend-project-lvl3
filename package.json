@@ -4,6 +4,7 @@
   "description": "web page downloader",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/CENTneRMOB/backend-project-lvl3/issues"
   },
-  "homepage": "https://github.com/CENTneRMOB/backend-project-lvl3#readme"
+  "homepage": "https://github.com/CENTneRMOB/backend-project-lvl3#readme",
+  "devDependencies": {
+    "eslint": "^7.21.0"
+  }
 }
