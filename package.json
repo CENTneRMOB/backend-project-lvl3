@@ -1,0 +1,19 @@
+{
+  "name": "@hexlet/code",
+  "version": "1.0.0",
+  "description": "web page downloader",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CENTneRMOB/backend-project-lvl3.git"
+  },
+  "author": "Boris.P",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CENTneRMOB/backend-project-lvl3/issues"
+  },
+  "homepage": "https://github.com/CENTneRMOB/backend-project-lvl3#readme"
+}
