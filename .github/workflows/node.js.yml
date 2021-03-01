@@ -27,4 +27,4 @@ jobs:
       run: make install
     - name: Linter code check
       run: make lint
-    - name: Test & publish code coverage
+    # - name: Test & publish code coverage
