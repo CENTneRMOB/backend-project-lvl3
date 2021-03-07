@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint",
-    "test": "npx -n --experimental-vm-modules jest"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+  },
+  "bin": {
+    "page-loader": "bin/page-loader.js"
   },
   "repository": {
     "type": "git",
@@ -22,6 +25,17 @@
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jest": "^24.1.5",
-    "jest": "^26.6.3"
+    "jest": "^26.6.3",
+    "jest-environment-node": "^26.6.2",
+    "nock": "^13.0.10"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "commander": "^7.1.0"
+  },
+  "type": "module",
+  "jest": {
+    "testEnvironment": "jest-environment-node",
+    "transform": {}
   }
 }
