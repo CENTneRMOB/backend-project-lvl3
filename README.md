@@ -12,4 +12,4 @@
 
 ## Using cases
 
-[First using case](https://asciinema.org/a/397381 "page-loader using case with .htm file and default directory(cwd)")
+[First using case with .html file and default directory(cwd)](https://asciinema.org/a/397381 "first step done")
