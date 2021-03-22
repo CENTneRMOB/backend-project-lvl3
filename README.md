@@ -12,4 +12,6 @@
 
 ## Using cases
 
-[First using case with .html file and default directory(cwd)](https://asciinema.org/a/397381 "first step done")
+[Download .html file in default directory(cwd)](https://asciinema.org/a/397381 "first step done")
+
+[Download .html file and its images in specified directory](https://asciinema.org/a/400948 "second step done")

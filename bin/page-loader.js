@@ -10,11 +10,11 @@ const version = '1.0.0';
 
 program
   .version(`${version}`)
-  .description('Download web page content.')
+  .description('Download web page with content.')
   .arguments('<pageUrl>')
   .option('-o, --output [dir]', 'output dir', `${process.cwd()}`)
   .action((url) => {
-    pageLoader(url, program.output);
+    pageLoader(url, program.opts().output);
   });
 
 program.parse(process.argv);

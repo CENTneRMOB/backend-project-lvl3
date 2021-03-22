@@ -31,7 +31,9 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
-    "commander": "^7.1.0"
+    "cheerio": "^1.0.0-rc.5",
+    "commander": "^7.1.0",
+    "lodash": "^4.17.21"
   },
   "type": "module",
   "jest": {
