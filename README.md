@@ -15,3 +15,5 @@
 [Download .html file in default directory(cwd)](https://asciinema.org/a/397381 "first step done")
 
 [Download .html file and its images in specified directory](https://asciinema.org/a/400948 "second step done")
+
+[Download .html file and its all local files in specified directory](https://asciinema.org/a/406365 "third step done")

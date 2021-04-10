@@ -1,36 +1,36 @@
 import fs, { promises as fsp } from 'fs';
-import _ from 'lodash';
 import path from 'path';
 import getGeneralPath from './getGeneralPath.js';
 import downloadEngine from './downloader.js';
-import getPictures from './extractImages.js';
+import getFiles from './extractFiles.js';
 
 const pageLoader = (inputUrl, outputPath = process.cwd()) => {
+  const localOrigin = new URL(inputUrl).origin;
   const generalPath = getGeneralPath(inputUrl, outputPath);
   const htmlFilePath = `${generalPath}.html`;
   const contentDirPath = `${generalPath}_files`;
 
   let downloadedHTMLContent;
   let modifiedData;
-  let imageSources;
-  let imageNames;
+  let fileInfos;
 
   return downloadEngine(inputUrl)
     .then((response) => {
       downloadedHTMLContent = response.data;
     })
     .then(() => fsp.mkdir(contentDirPath))
-    .then(() => getPictures(downloadedHTMLContent, contentDirPath))
-    .then((images) => {
-      [modifiedData, imageSources, imageNames] = images;
-    })
-    .then(() => fsp.writeFile(htmlFilePath, modifiedData))
+    // .then(() => getFiles(downloadedHTMLContent, contentDirPath, localOrigin))
     .then(() => {
-      const imageContent = _.zipObject(imageSources, imageNames);
-      Object.entries(imageContent).forEach(([source, name]) => {
-        downloadEngine(source, 'stream')
+      [modifiedData, fileInfos] = getFiles(downloadedHTMLContent, contentDirPath, localOrigin);
+      // console.log(modifiedData, fileInfos);
+      fsp.writeFile(htmlFilePath, modifiedData);
+    })
+    .then(() => {
+      // console.log(Object.entries(fileInfos[0]));
+      fileInfos.forEach(({ fullLink, fullName }) => {
+        downloadEngine(fullLink, 'stream')
           .then((response) => response.data.pipe(
-            fs.createWriteStream(path.join(contentDirPath, name)),
+            fs.createWriteStream(path.join(contentDirPath, fullName)),
           ));
       });
     })
