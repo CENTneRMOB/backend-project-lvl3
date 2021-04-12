@@ -41,6 +41,7 @@ test('downloaded .html page changing and downloading images', async () => {
   await fsp.copyFile(sourcePath, dest);
   const [modifiedHtml, sources] = getFiles(sourceContent, tmpDir, localOrigin);
   await fsp.writeFile(dest, modifiedHtml);
+  // console.log(modifiedHtml);
   const readedModifiedContent = await fsp.readFile(dest, 'utf-8');
 
   const myURL = new URL(sources[0].fullLink);
@@ -54,3 +55,7 @@ test('downloaded .html page changing and downloading images', async () => {
   expect(readedModifiedContent).toEqual(modifiedHtml);
   expect(scope.isDone()).toBe(true);
 });
+
+// page-loader --output /home/boris/folder https://www.mos.ru
+
+// page-loader --output /home/boris/folder https://ru.hexlet.io/teams

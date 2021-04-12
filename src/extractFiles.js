@@ -9,9 +9,7 @@ const isLocal = (url, localOrigin) => {
 
 const getFiles = (data, dirPath, localOrigin) => {
   const inputData = data;
-
   const $ = cheerio.load(inputData);
-
   const fileInfos = [];
 
   $('link, img, script').each((i, el) => {
