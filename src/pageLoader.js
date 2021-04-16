@@ -1,11 +1,15 @@
 import fs, { promises as fsp } from 'fs';
 import path from 'path';
+import debug from 'debug';
 import getGeneralPath from './getGeneralPath.js';
 import downloadEngine from './downloader.js';
 import getFiles from './extractFiles.js';
 
+const logPageLoader = debug('page-loader:main module');
+
 const pageLoader = (inputUrl, outputPath = process.cwd()) => {
   const localOrigin = new URL(inputUrl).origin;
+  logPageLoader('incoming url', inputUrl);
   const generalPath = getGeneralPath(inputUrl, outputPath);
   const htmlFilePath = `${generalPath}.html`;
   const contentDirPath = `${generalPath}_files`;
@@ -22,11 +26,10 @@ const pageLoader = (inputUrl, outputPath = process.cwd()) => {
     // .then(() => getFiles(downloadedHTMLContent, contentDirPath, localOrigin))
     .then(() => {
       [modifiedData, fileInfos] = getFiles(downloadedHTMLContent, contentDirPath, localOrigin);
-      // console.log(modifiedData, fileInfos);
+      logPageLoader('got files info?', fileInfos.length !== 0);
       fsp.writeFile(htmlFilePath, modifiedData);
     })
     .then(() => {
-      // console.log(Object.entries(fileInfos[0]));
       fileInfos.forEach(({ fullLink, fullName }) => {
         downloadEngine(fullLink, 'stream')
           .then((response) => response.data.pipe(

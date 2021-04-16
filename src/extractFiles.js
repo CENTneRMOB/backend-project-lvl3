@@ -15,7 +15,7 @@ const getFiles = (data, dirPath, localOrigin) => {
   $('link, img, script').each((i, el) => {
     if ($(el).attr('href')) {
       const sideLink = $(el).attr('href');
-      if (isLocal(sideLink, localOrigin) === true) {
+      if (isLocal(sideLink, localOrigin)) {
         const { fullLink, fullName } = getNameAndFullLink(sideLink, localOrigin);
         const filePath = path.join(dirPath, fullName);
         fileInfos[i] = { fullLink, fullName };
@@ -24,7 +24,7 @@ const getFiles = (data, dirPath, localOrigin) => {
     }
     if ($(el).attr('src')) {
       const sideLink = $(el).attr('src');
-      if (isLocal(sideLink, localOrigin) === true) {
+      if (isLocal(sideLink, localOrigin)) {
         const { fullLink, fullName } = getNameAndFullLink(sideLink, localOrigin);
         const filePath = path.join(dirPath, fullName);
         fileInfos[i] = { fullLink, fullName };

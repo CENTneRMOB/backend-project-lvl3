@@ -13,7 +13,7 @@ lint:
 	npx eslint .
 
 test:
-	npm test	
+	DEBUG=nock.common,page-loader:*,axios npm test	
 
 test-coverage:
 	npm test -- --coverage --coverageProvider=v8
