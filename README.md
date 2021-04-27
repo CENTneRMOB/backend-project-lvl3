@@ -19,3 +19,5 @@
 [Download .html file and its all local files in specified directory](https://asciinema.org/a/406365 "third step done")
 
 [Logging axios,nock and page-loader with debug](https://asciinema.org/a/407795 "fourth step done")
+
+[Console.log some errors](https://asciinema.org/a/410257 "fifth step done")
