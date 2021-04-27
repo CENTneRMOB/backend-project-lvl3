@@ -2,7 +2,7 @@ import path from 'path';
 import nock from 'nock';
 import os from 'os';
 import { fileURLToPath } from 'url';
-import fs, { promises as fsp } from 'fs';
+import { promises as fsp } from 'fs';
 import debug from 'debug';
 import pageLoader from '../src/pageLoader.js';
 import getGeneralPath from '../src/getGeneralPath.js';
