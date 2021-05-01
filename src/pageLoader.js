@@ -1,9 +1,10 @@
 import fs, { promises as fsp } from 'fs';
 import path from 'path';
 import debug from 'debug';
+import Listr from 'listr';
 import getGeneralPath from './getGeneralPath.js';
 import downloadEngine from './downloader.js';
-import getFiles from './extractFiles.js';
+import getFiles from './getFilesInfo.js';
 
 const logPageLoader = debug('page-loader:main module');
 
@@ -49,14 +50,18 @@ const pageLoader = (inputUrl, outputPath = process.cwd()) => {
       }
     })
     .then(() => {
-      fileInfos.forEach(({ fullLink, fullName }) => {
-        downloadEngine(fullLink, 'stream')
-          .then((response) => {
-            response.data.pipe(fs.createWriteStream(path.join(contentDirPath, fullName)));
-          });
-      });
+      const promises = [];
+      const list = new Listr(fileInfos.map(({ fullLink, fullName }) => ({
+        title: fullLink,
+        task: () => downloadEngine(fullLink, 'stream')
+          .then((response) => response.data
+            .pipe(fs.createWriteStream(path.join(contentDirPath, fullName))))
+          .then((promise) => promises.push(promise)),
+      })), { concurrent: true });
+      list.run();
+      return Promise.all(promises);
     })
-    .then(() => console.log('filepath', htmlFilePath))
+    .then(() => console.log(`Page was successfully downloaded into '${htmlFilePath}'`))
     .catch((error) => {
       console.error(`${error.message}\n`);
       throw error;

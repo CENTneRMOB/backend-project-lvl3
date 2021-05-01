@@ -20,4 +20,4 @@
 
 [Logging axios,nock and page-loader with debug](https://asciinema.org/a/407795 "fourth step done")
 
-[Console.log some errors](https://asciinema.org/a/410257 "fifth step done")
+[Console.log some posible errors](https://asciinema.org/a/410257 "fifth step done")

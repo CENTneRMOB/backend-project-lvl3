@@ -6,7 +6,7 @@ import { promises as fsp } from 'fs';
 import debug from 'debug';
 import pageLoader from '../src/pageLoader.js';
 import getGeneralPath from '../src/getGeneralPath.js';
-import getFiles from '../src/extractFiles.js';
+import getFiles from '../src/getFilesInfo.js';
 import downloadEngine from '../src/downloader.js';
 
 const logTest = debug('page-loader:tests');
