@@ -18,6 +18,7 @@ const pageLoader = (inputUrl, outputPath = process.cwd()) => {
   let downloadedHTMLContent;
   let modifiedData;
   let fileInfos;
+
   return downloadEngine(inputUrl)
     .then((response) => {
       logPageLoader('Response', response.status);
@@ -50,18 +51,22 @@ const pageLoader = (inputUrl, outputPath = process.cwd()) => {
       }
     })
     .then(() => {
-      const promises = [];
-      const list = new Listr(fileInfos.map(({ fullLink, fullName }) => ({
+      const tasks = fileInfos.map(({ fullLink, fullName }) => ({
         title: fullLink,
-        task: () => downloadEngine(fullLink, 'stream')
-          .then((response) => response.data
-            .pipe(fs.createWriteStream(path.join(contentDirPath, fullName))))
-          .then((promise) => promises.push(promise)),
-      })), { concurrent: true });
-      list.run();
-      return Promise.all(promises);
+        task: () => downloadEngine(fullLink, 'stream'),
+          // .then((response) => response.data)
+          //   .pipe(fs.createWriteStream(path.join(contentDirPath, fullName))),
+      }));
+      logPageLoader('tasks', tasks);
+      const list = new Listr(tasks, { concurrent: true });
+      return list.run();
     })
-    .then(() => console.log(`Page was successfully downloaded into '${htmlFilePath}'`))
+    .then(() => fsp.stat(contentDirPath))
+    .then((stats) => {
+      if (stats.size !== 0) {
+        console.log(`Page was successfully downloaded into '${htmlFilePath}'`);
+      }
+    })
     .catch((error) => {
       console.error(`${error.message}\n`);
       throw error;
@@ -69,3 +74,6 @@ const pageLoader = (inputUrl, outputPath = process.cwd()) => {
 };
 
 export default pageLoader;
+
+// .then((response) => response.data.pipe(fs.createWriteStream(path.join(contentDirPath, fullName))))
+//console.log(`Page was successfully downloaded into '${htmlFilePath}'`);
