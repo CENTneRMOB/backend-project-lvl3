@@ -21,3 +21,5 @@
 [Logging axios,nock and page-loader with debug](https://asciinema.org/a/407795 "fourth step done")
 
 [Console.log some posible errors](https://asciinema.org/a/410257 "fifth step done")
+
+[Install package and working case](https://asciinema.org/a/411554 "sixth step done")

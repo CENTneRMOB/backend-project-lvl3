@@ -22,51 +22,42 @@ const pageLoader = (inputUrl, outputPath = process.cwd()) => {
   return downloadEngine(inputUrl)
     .then((response) => {
       logPageLoader('Response', response.status);
-      if (response.status !== 200) {
-        throw new Error(`Request error at ${inputUrl}. Response status is ${response.status}`);
-      }
       downloadedHTMLContent = response.data;
     })
     .then(() => {
       if (fs.existsSync(contentDirPath)) {
         throw new Error(`File system error. ${contentDirPath} already exists`);
       }
-      fsp.mkdir(contentDirPath);
+    })
+    .then(() => fsp.mkdir(contentDirPath))
+    .then(() => {
+      fsp.access(contentDirPath, fs.constants.F_OK)
+        .catch(() => {
+          throw new Error(`File system error. ${contentDirPath} does not exist`);
+        });
     })
     .then(() => {
-      try {
-        fsp.access(contentDirPath, fs.constants.F_OK);
-      } catch {
-        throw new Error(`File system error. ${contentDirPath} does not exist`);
-      }
+      fsp.access(contentDirPath, fs.constants.W_OK)
+        .catch(() => {
+          throw new Error(`File system error. You have no permissions to write in ${contentDirPath}`);
+        });
     })
     .then(() => {
-      try {
-        fsp.access(contentDirPath, fs.constants.W_OK);
-        [modifiedData, fileInfos] = getFiles(downloadedHTMLContent, contentDirPath, localOrigin);
-        logPageLoader('got files info?', fileInfos.length !== 0);
-        fsp.writeFile(htmlFilePath, modifiedData);
-      } catch {
-        throw new Error(`File system error. You have no permissions to write in ${contentDirPath}`);
-      }
+      [modifiedData, fileInfos] = getFiles(downloadedHTMLContent, contentDirPath, localOrigin);
+      logPageLoader('got files info?', fileInfos.length !== 0);
+      fsp.writeFile(htmlFilePath, modifiedData);
     })
     .then(() => {
       const tasks = fileInfos.map(({ fullLink, fullName }) => ({
         title: fullLink,
-        task: () => downloadEngine(fullLink, 'stream'),
-          // .then((response) => response.data)
-          //   .pipe(fs.createWriteStream(path.join(contentDirPath, fullName))),
+        task: () => downloadEngine(fullLink, 'arraybuffer')
+          .then((response) => fsp.writeFile(path.join(contentDirPath, fullName), response.data)),
       }));
       logPageLoader('tasks', tasks);
       const list = new Listr(tasks, { concurrent: true });
       return list.run();
     })
-    .then(() => fsp.stat(contentDirPath))
-    .then((stats) => {
-      if (stats.size !== 0) {
-        console.log(`Page was successfully downloaded into '${htmlFilePath}'`);
-      }
-    })
+    .then(() => console.log(`Page was successfully downloaded into '${htmlFilePath}'`))
     .catch((error) => {
       console.error(`${error.message}\n`);
       throw error;
@@ -74,6 +65,3 @@ const pageLoader = (inputUrl, outputPath = process.cwd()) => {
 };
 
 export default pageLoader;
-
-// .then((response) => response.data.pipe(fs.createWriteStream(path.join(contentDirPath, fullName))))
-//console.log(`Page was successfully downloaded into '${htmlFilePath}'`);
