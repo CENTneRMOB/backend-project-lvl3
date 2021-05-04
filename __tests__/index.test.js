@@ -27,8 +27,8 @@ beforeAll(async () => {
   nock.disableNetConnect();
 });
 
-describe('page-loader tests without errors', () => {
-  test('got response?', async () => {
+describe('Page-loader tests without errors', () => {
+  test('Is request working and get response wit "OK" status', async () => {
     const myURL = new URL(inputURL);
     const scope = nock(myURL.origin)
       .get(myURL.pathname)
@@ -38,9 +38,11 @@ describe('page-loader tests without errors', () => {
     expect(scope.isDone()).toBe(true);
   });
 
-  test('downloaded .html page was changed and files were downloaded', async () => {
+  test('Downloaded .html page was changed. Files were downloaded. Modified .html contains relative paths, not absolute', async () => {
     const dest = `${getGeneralPath(inputURL, tmpDir)}.html`;
     logTest('main html file', dest);
+    logTest('tempDir', tmpDir);
+    const tmpDirName = path.parse(tmpDir).base;
     const sourcePath = getFixturePath('original_page.html');
     const sourceContent = await fsp.readFile(sourcePath, 'utf-8');
     await fsp.copyFile(sourcePath, dest);
@@ -56,14 +58,15 @@ describe('page-loader tests without errors', () => {
 
     await downloadEngine(sources[0].fullLink);
 
-    expect(readedModifiedContent.includes(tmpDir)).toBe(true);
+    expect(readedModifiedContent.includes(tmpDir)).toBe(false);
+    expect(readedModifiedContent.includes(tmpDirName)).toBe(true);
     expect(readedModifiedContent).toEqual(modifiedHtml);
     expect(scope2.isDone()).toBe(true);
   });
 });
 
-describe('tests with errors expecting', () => {
-  test('get request error with 400 status code', async () => {
+describe('Tests with errors expecting', () => {
+  test('Get request error with 400 status code', async () => {
     const myURL = new URL(inputURL);
     nock(myURL.origin)
       .get(myURL.pathname)
@@ -71,7 +74,7 @@ describe('tests with errors expecting', () => {
 
     await expect(pageLoader(inputURL, tmpDir)).rejects.toThrow('error');
   });
-  test('get already exists error', async () => {
+  test('Get already exists error', async () => {
     const myURL = new URL(inputURL);
     nock(myURL.origin)
       .get(myURL.pathname)

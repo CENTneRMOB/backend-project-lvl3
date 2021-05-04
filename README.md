@@ -3,7 +3,7 @@
 ## Hexlet tests and linter status:
 [![Actions Status](https://github.com/CENTneRMOB/backend-project-lvl3/workflows/hexlet-check/badge.svg)](https://github.com/CENTneRMOB/backend-project-lvl3/actions)
 
-[![Actions](https://github.com/CENTneRMOB/backend-project-lvl3/workflows/Node.js%20CI/badge.svg?branch=master)](https://github.com/CENTneRMOB/backend-project-lvl3/actions)
+[![Actions](https://github.com/CENTneRMOB/backend-project-lvl3/workflows/Node.js%20CI/badge.svg?branch=main)](https://github.com/CENTneRMOB/backend-project-lvl3/actions)
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/ff6f2ad5a0cfcd4eb17c/maintainability)](https://codeclimate.com/github/CENTneRMOB/backend-project-lvl3/maintainability)
 

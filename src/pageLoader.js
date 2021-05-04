@@ -14,6 +14,7 @@ const pageLoader = (inputUrl, outputPath = process.cwd()) => {
   const generalPath = getGeneralPath(inputUrl, outputPath);
   const htmlFilePath = `${generalPath}.html`;
   const contentDirPath = `${generalPath}_files`;
+  logPageLoader([generalPath, htmlFilePath, contentDirPath]);
 
   let downloadedHTMLContent;
   let modifiedData;
@@ -44,6 +45,7 @@ const pageLoader = (inputUrl, outputPath = process.cwd()) => {
     })
     .then(() => {
       [modifiedData, fileInfos] = getFiles(downloadedHTMLContent, contentDirPath, localOrigin);
+      logPageLoader(fileInfos);
       logPageLoader('got files info?', fileInfos.length !== 0);
       fsp.writeFile(htmlFilePath, modifiedData);
     })
@@ -57,11 +59,7 @@ const pageLoader = (inputUrl, outputPath = process.cwd()) => {
       const list = new Listr(tasks, { concurrent: true });
       return list.run();
     })
-    .then(() => console.log(`Page was successfully downloaded into '${htmlFilePath}'`))
-    .catch((error) => {
-      console.error(`${error.message}\n`);
-      throw error;
-    });
+    .then(() => htmlFilePath);
 };
 
 export default pageLoader;

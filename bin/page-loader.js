@@ -13,7 +13,13 @@ program
   .arguments('<pageUrl>')
   .option('-o, --output [dir]', 'output dir', `${process.cwd()}`)
   .action((url) => {
-    pageLoader(url, program.opts().output);
+    pageLoader(url, program.opts().output)
+      .then((htmlFilePath) => console.log(`Page was successfully downloaded into '${htmlFilePath}'`))
+      .catch((error) => {
+        console.error(`${error.message}\n`);
+
+        process.exit(1);
+      });
   });
 
 program.parse(process.argv);

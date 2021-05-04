@@ -9,6 +9,7 @@ const isLocal = (url, localOrigin) => {
 
 const getFiles = (data, dirPath, localOrigin) => {
   const inputData = data;
+  const dirName = path.parse(dirPath).base;
   const $ = cheerio.load(inputData);
   const fileInfos = [];
 
@@ -17,18 +18,18 @@ const getFiles = (data, dirPath, localOrigin) => {
       const sideLink = $(el).attr('href');
       if (isLocal(sideLink, localOrigin)) {
         const { fullLink, fullName } = getNameAndFullLink(sideLink, localOrigin);
-        const filePath = path.join(dirPath, fullName);
+        const relativeFilePath = path.join(dirName, fullName);
         fileInfos[i] = { fullLink, fullName };
-        $(el).attr('href', `${filePath}`);
+        $(el).attr('href', `${relativeFilePath}`);
       }
     }
     if ($(el).attr('src')) {
       const sideLink = $(el).attr('src');
       if (isLocal(sideLink, localOrigin)) {
         const { fullLink, fullName } = getNameAndFullLink(sideLink, localOrigin);
-        const filePath = path.join(dirPath, fullName);
+        const relativeFilePath = path.join(dirName, fullName);
         fileInfos[i] = { fullLink, fullName };
-        $(el).attr('src', `${filePath}`);
+        $(el).attr('src', `${relativeFilePath}`);
       }
     }
   });
