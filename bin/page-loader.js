@@ -4,7 +4,8 @@ import fs from 'fs';
 import program from 'commander';
 import pageLoader from '../index.js';
 
-const pkgContent = fs.readFileSync(path.resolve(process.cwd(), 'package.json'), 'utf-8');
+console.log(process.cwd());
+const pkgContent = fs.readFileSync(path.resolve(process.cwd(), './package.json'), 'utf-8');
 const { version } = JSON.parse(pkgContent);
 
 program
