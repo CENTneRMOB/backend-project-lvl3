@@ -1,6 +1,6 @@
 install: install-deps
 
-start:
+page-loader:
 	node bin/page-loader.js
 
 install-deps:

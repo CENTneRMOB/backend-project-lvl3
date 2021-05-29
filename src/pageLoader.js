@@ -29,19 +29,31 @@ const pageLoader = (inputUrl, outputPath = process.cwd()) => {
       if (fs.existsSync(contentDirPath)) {
         throw new Error(`File system error. ${contentDirPath} already exists`);
       }
+      if (!fs.existsSync(outputPath)) {
+        throw new Error(`File system error. ${outputPath} does not exist`);
+      }
     })
+    .then(() => fsp.stat(outputPath))
+    .then((stats) => {
+      if (!stats.isDirectory()) {
+        throw new Error(`File system error. ${outputPath} is not a directory`);
+      }
+    })
+    .then(() => fsp.access(outputPath, fs.constants.W_OK)
+      .catch(() => {
+        throw new Error(`File system error. You have no permissions to write in ${outputPath}`);
+      }))
     .then(() => fsp.mkdir(contentDirPath))
     .then(() => {
-      fsp.access(contentDirPath, fs.constants.F_OK)
-        .catch(() => {
-          throw new Error(`File system error. ${contentDirPath} does not exist`);
-        });
+      if (!fs.existsSync(contentDirPath)) {
+        throw new Error(`File system error. ${contentDirPath} does not exist`);
+      }
     })
-    .then(() => {
-      fsp.access(contentDirPath, fs.constants.W_OK)
-        .catch(() => {
-          throw new Error(`File system error. You have no permissions to write in ${contentDirPath}`);
-        });
+    .then(() => fsp.stat(contentDirPath))
+    .then((stats) => {
+      if (!stats.isDirectory()) {
+        throw new Error(`File system error. ${contentDirPath} is not a directory`);
+      }
     })
     .then(() => {
       [modifiedData, fileInfos] = getFiles(downloadedHTMLContent, contentDirPath, localOrigin);

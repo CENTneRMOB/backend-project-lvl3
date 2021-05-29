@@ -4,8 +4,7 @@
   "description": "web page downloader",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+    "test": "npx jest"
   },
   "bin": {
     "page-loader": "bin/page-loader.js"
@@ -40,7 +39,7 @@
   },
   "type": "module",
   "jest": {
-    "testEnvironment": "jest-environment-node",
+    "testEnvironment": "node",
     "transform": {}
   }
 }
