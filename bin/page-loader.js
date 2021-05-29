@@ -1,11 +1,14 @@
 #!/usr/bin/env node
+import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs';
 import program from 'commander';
 import pageLoader from '../index.js';
 
-console.log(process.cwd());
-const pkgContent = fs.readFileSync(path.resolve(process.cwd(), './package.json'), 'utf-8');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const pkgContent = fs.readFileSync(path.resolve(__dirname, '../package.json'), 'utf-8');
 const { version } = JSON.parse(pkgContent);
 
 program
