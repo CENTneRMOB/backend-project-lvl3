@@ -18,26 +18,19 @@ const filesDirectoryName = 'ru-hexlet-io-courses_files';
 const getFixturePath = (filename = '') => path.join(__dirname, '..', '__fixtures__', filename);
 
 const expectHtmlAbsolutePath = getFixturePath('ru-hexlet-io-courses.html');
-const expectCssRelativePath = path.join(filesDirectoryName, 'ru-hexlet-io-assets-application.css');
-const expectSubHtmlRelativePath = path.join(filesDirectoryName, 'ru-hexlet-io-courses.html');
-const expectPngRelativePath = path.join(filesDirectoryName, 'ru-hexlet-io-assets-professions-nodejs.png');
-const expectScriptRelativePath = path.join(filesDirectoryName, 'ru-hexlet-io-packs-js-runtime.js');
 
-const pathNamesWithFilePaths = [
-  ['/assets/application.css', expectCssRelativePath],
-  ['/courses', expectSubHtmlRelativePath],
-  ['/assets/professions/nodejs.png', expectPngRelativePath],
-  ['/packs/js/runtime.js', expectScriptRelativePath],
+const resourcesPaths = [
+  ['/assets/application.css', path.join(filesDirectoryName, 'ru-hexlet-io-assets-application.css')],
+  ['/courses', path.join(filesDirectoryName, 'ru-hexlet-io-courses.html')],
+  ['/assets/professions/nodejs.png', path.join(filesDirectoryName, 'ru-hexlet-io-assets-professions-nodejs.png')],
+  ['/packs/js/runtime.js', path.join(filesDirectoryName, 'ru-hexlet-io-packs-js-runtime.js')],
 ];
 
-const readFile = async (filePath, encoding = 'utf-8') => {
-  const content = await fsp.readFile(filePath, encoding);
-  return content;
-};
+const readFile = (filePath, encoding = 'utf-8') => fsp.readFile(filePath, encoding);
 
 beforeAll(() => {
-  pathNamesWithFilePaths.forEach(([pathName, filePath]) => scope
-    .get(pathName).replyWithFile(200, path.join(getFixturePath(), filePath)));
+  resourcesPaths.forEach(([pathName, fileName]) => scope
+    .get(pathName).replyWithFile(200, path.join(getFixturePath(), fileName)));
 });
 
 beforeEach(async () => {
@@ -59,11 +52,11 @@ describe('Page-loader tests without errors expecting', () => {
     expect(await readFile(path.join(tmpDir, 'ru-hexlet-io-courses.html'))).toBe(modifiedHtmlContent);
   });
 
-  test.each(pathNamesWithFilePaths.map(([, filePath]) => filePath))('File from main page was downloaded and saved to %s', async (fixtureRelativeFilePath) => {
+  test.each(resourcesPaths)('File from %s was downloaded and saved to %s', async (sourceUrl, sourcePath) => {
     await pageLoader(inputURL, tmpDir);
 
-    const savedFilePath = path.join(tmpDir, fixtureRelativeFilePath);
-    const fixtureFilePath = path.join(getFixturePath(), fixtureRelativeFilePath);
+    const savedFilePath = path.join(tmpDir, sourcePath);
+    const fixtureFilePath = path.join(getFixturePath(), sourcePath);
     const fixtureContent = await readFile(fixtureFilePath);
     const savedContent = await readFile(savedFilePath);
 
