@@ -1,3 +1,3 @@
-import pageLoader from './src/pageLoader.js';
+import loadWebPage from './src/loadWebPage.js';
 
-export default pageLoader;
+export default loadWebPage;

@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs';
 import program from 'commander';
-import pageLoader from '../index.js';
+import loadWebPage from '../index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,15 +12,15 @@ const pkgContent = fs.readFileSync(path.resolve(__dirname, '../package.json'), '
 const { version } = JSON.parse(pkgContent);
 
 program
-  .version(`${version}`)
+  .version(version)
   .description('Download web page with content.')
   .arguments('<pageUrl>')
-  .option('-o, --output [dir]', 'output dir', `${process.cwd()}`)
+  .option('-o, --output [dir]', 'output dir', process.cwd())
   .action((url) => {
-    pageLoader(url, program.opts().output)
+    loadWebPage(url, program.opts().output)
       .then((htmlFilePath) => console.log(`Page was successfully downloaded into '${htmlFilePath}'`))
       .catch((error) => {
-        console.error(`${error.message}\n`);
+        console.error(error.message);
 
         process.exit(1);
       });

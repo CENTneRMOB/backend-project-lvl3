@@ -7,7 +7,7 @@ const isLocal = (url, localOrigin) => {
   return myURL.origin === localOrigin;
 };
 
-const getFiles = (data, dirPath, localOrigin) => {
+const getSources = (data, dirPath, localOrigin) => {
   const inputData = data;
   const dirName = path.parse(dirPath).base;
   const $ = cheerio.load(inputData);
@@ -42,4 +42,4 @@ const getFiles = (data, dirPath, localOrigin) => {
   ];
 };
 
-export default getFiles;
+export default getSources;
