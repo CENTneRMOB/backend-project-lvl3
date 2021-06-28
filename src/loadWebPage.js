@@ -39,12 +39,7 @@ const loadWebPage = (inputUrl, outputPath = process.cwd()) => {
           });
       }
 
-      const dirname = path.dirname(outputPath);
-      return fsp.access(dirname, fs.constants.W_OK)
-        .then(() => fsp.mkdir(outputPath))
-        .catch(() => {
-          throw new Error(`File system error. ${outputPath} does not exist and you have no permissions to create it`);
-        });
+      throw new Error(`File system error. ${outputPath} does not exist`);
     })
     .then(() => fsp.mkdir(contentDirPath))
     .then(() => isExists(contentDirPath)
