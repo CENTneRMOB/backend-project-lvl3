@@ -46,10 +46,11 @@ describe('Page-loader tests without errors expecting', () => {
 
   test('Main html file was downloaded and modified', async () => {
     const modifiedHtmlContent = await readFile(expectedHtmlAbsolutePath);
+    const savedFilePath = path.join(tmpDir, 'ru-hexlet-io-courses.html');
 
     await loadWebPage(inputURL, tmpDir);
 
-    expect(await readFile(path.join(tmpDir, 'ru-hexlet-io-courses.html'))).toBe(modifiedHtmlContent);
+    expect(await readFile(savedFilePath)).toBe(modifiedHtmlContent);
   });
 
   test.each(resourcesPaths)('File from %s was downloaded and saved to %s', async (sourceUrl, sourcePath) => {
@@ -70,16 +71,21 @@ describe.each([
   502,
 ])('Tests with network and server errors expecting', (error) => {
   test(`Get ${error} code error`, async () => {
-    await expect(loadWebPage(`${pageURL.origin}/${error}`, tmpDir)).rejects.toThrow(`Request error at ${pageURL.origin}`);
+    const errorUrl = `${pageURL.origin}/${error}`;
+    await expect(loadWebPage(errorUrl, tmpDir))
+      .rejects
+      .toThrow(`${pageURL.origin}`);
   });
 });
 
 describe.each([
-  [(path.join('/var', 'lib')), 'no permissions to write in'],
-  [(path.join('path', 'NotExists')), 'does not exist'],
-  [expectedHtmlAbsolutePath, 'is not a directory'],
+  [(path.join('/var', 'lib')), 'permission denied'],
+  [(path.join('path', 'NotExists')), 'no such file or directory'],
+  [expectedHtmlAbsolutePath, 'not a directory'],
 ])('Writing errors', (outputPath, errorText) => {
   test(`File errors contains "${errorText}"`, async () => {
-    await expect(loadWebPage(inputURL, outputPath)).rejects.toThrow(errorText);
+    await expect(loadWebPage(inputURL, outputPath))
+      .rejects
+      .toThrow(errorText);
   });
 });
