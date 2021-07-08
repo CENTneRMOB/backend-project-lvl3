@@ -22,6 +22,7 @@ export default (inputUrl, outputPath = process.cwd()) => {
   logPageLoader([generalPath, htmlFilePath, contentDirPath]);
 
   return isExists(contentDirPath)
+    // eslint-disable-next-line consistent-return
     .then((isExistsAnswer) => {
       if (!isExistsAnswer) {
         return fsp.mkdir(contentDirPath);
