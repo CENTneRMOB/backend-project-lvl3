@@ -1,31 +1,34 @@
 import cheerio from 'cheerio';
 import path from 'path';
-import { getFullSlugifiedName } from './slugifyUtils.js';
+import { getSlugifiedResourceName } from './slugifyUtils.js';
 
 export default (data, dirName, localOrigin) => {
   const $ = cheerio.load(data);
-  const fileInfos = [];
+  const resources = [];
 
-  $('link, img, script').each((i, el) => {
-    const elAttrbs = {
-      link: 'href',
-      img: 'src',
-      script: 'src',
-    };
+  const tagsAttrbs = {
+    link: 'href',
+    img: 'src',
+    script: 'src',
+  };
 
-    const sideLink = $(el).attr(elAttrbs[el.name]);
-    const urlObj = new URL(sideLink, localOrigin);
-    if (urlObj.origin === localOrigin) {
-      const { href } = urlObj;
-      const fullName = getFullSlugifiedName(urlObj);
-      const relativeFilePath = path.join(dirName, fullName);
-      fileInfos.push({ fullLink: href, fullName });
-      $(el).attr(elAttrbs[el.name], `${relativeFilePath}`);
-    }
+  Object.keys(tagsAttrbs).forEach((tag) => {
+    $(tag).each((i, element) => {
+      const attrbUrl = $(element).attr(tagsAttrbs[element.name]);
+      const attrbUrlObj = new URL(attrbUrl, localOrigin);
+      if (attrbUrlObj.origin !== localOrigin) {
+        return;
+      }
+      const { href } = attrbUrlObj;
+      const resourceFileName = getSlugifiedResourceName(attrbUrlObj);
+      const relativeFilePath = path.join(dirName, resourceFileName);
+      resources.push({ resourceUrl: href, resourceFileName });
+      $(element).attr(tagsAttrbs[element.name], `${relativeFilePath}`);
+    });
   });
 
   return [
     $.html(),
-    fileInfos,
+    resources,
   ];
 };

@@ -3,54 +3,42 @@ import path from 'path';
 import axios from 'axios';
 import debug from 'debug';
 import Listr from 'listr';
-import { slugifyPath } from './slugifyUtils.js';
+import { slugifyUrl } from './slugifyUtils.js';
 import extractResources from './extractResources.js';
 
 const logPageLoader = debug('page-loader');
 
-const isExists = (dirPath) => fsp.stat(dirPath)
-  .then((stats) => stats !== false)
-  .catch(() => false);
+const loadAndSaveFile = (fileUrl, filePath) => axios.get(fileUrl, { responseType: 'arraybuffer' })
+  .then((response) => fsp.writeFile(filePath, response.data));
 
 export default (inputUrl, outputPath = process.cwd()) => {
-  const { origin, hostname, pathname } = new URL(inputUrl);
+  const inputUrlObj = new URL(inputUrl);
   logPageLoader('incoming url', inputUrl);
-  const slugifiedUrl = slugifyPath(`${hostname}${pathname}`);
-  const generalPath = path.resolve(outputPath, slugifiedUrl);
-  const htmlFilePath = `${generalPath}.html`;
-  const contentDirPath = `${generalPath}_files`;
-  logPageLoader([generalPath, htmlFilePath, contentDirPath]);
+  const slugifiedUrl = slugifyUrl(inputUrlObj);
+  const mainHtmlFileName = `${slugifiedUrl}.html`;
+  const contentDirName = `${slugifiedUrl}_files`;
+  const htmlFilePath = path.resolve(outputPath, mainHtmlFileName);
+  const contentDirPath = path.resolve(outputPath, contentDirName);
+  logPageLoader([slugifiedUrl, htmlFilePath, contentDirPath]);
 
-  return isExists(contentDirPath)
-    // eslint-disable-next-line consistent-return
-    .then((isExistsAnswer) => {
-      if (!isExistsAnswer) {
-        return fsp.mkdir(contentDirPath);
-      }
-    })
-    .then(() => axios({
-      method: 'GET',
-      url: inputUrl,
-      responseType: 'json',
-    }))
-    // .then(() => downloadEngine(inputUrl))
+  return fsp.access(contentDirPath)
+    .catch(() => fsp.mkdir(contentDirPath))
+    .then(() => axios.get(inputUrl))
     .then((response) => {
       logPageLoader('Response', response.status);
       const { base } = path.parse(contentDirPath);
-      const [modifiedHtml, sourcesInfo] = extractResources(response.data, base, origin);
-      logPageLoader(sourcesInfo);
+      const [modifiedHtml, resources] = extractResources(response.data, base, inputUrlObj.origin);
+      logPageLoader(resources);
       return fsp.writeFile(htmlFilePath, modifiedHtml)
-        .then(() => sourcesInfo);
+        .then(() => resources);
     })
-    .then((sourcesInfo) => {
-      const tasks = sourcesInfo.map(({ fullLink, fullName }) => ({
-        title: fullLink,
-        task: () => axios({
-          method: 'GET',
-          url: fullLink,
-          responseType: 'arraybuffer',
-        })
-          .then((response) => fsp.writeFile(path.join(contentDirPath, fullName), response.data)),
+    .then((resources) => {
+      const tasks = resources.map(({ resourceUrl, resourceFileName }) => ({
+        title: resourceUrl,
+        task: () => {
+          const fullFilePath = path.join(contentDirPath, resourceFileName);
+          return loadAndSaveFile(resourceUrl, fullFilePath);
+        },
       }));
       logPageLoader('tasks', tasks);
       const list = new Listr(tasks, { concurrent: true });

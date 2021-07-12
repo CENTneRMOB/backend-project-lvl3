@@ -15,7 +15,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const resourcesDirName = 'ru-hexlet-io-courses_files';
-const getFixturePath = (filename = '') => path.join(__dirname, '..', '__fixtures__', filename);
+const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
 
 const expectedHtmlAbsolutePath = getFixturePath('ru-hexlet-io-courses.html');
 
@@ -26,11 +26,11 @@ const resourcesPaths = [
   ['/packs/js/runtime.js', path.join(resourcesDirName, 'ru-hexlet-io-packs-js-runtime.js')],
 ];
 
-const readFile = (filePath, encoding = 'utf-8') => fsp.readFile(filePath, encoding);
+const readFile = (filePath) => fsp.readFile(filePath, 'utf-8');
 
 beforeAll(() => {
   resourcesPaths.forEach(([pathName, fileName]) => scope
-    .get(pathName).replyWithFile(200, path.join(getFixturePath(), fileName)));
+    .get(pathName).replyWithFile(200, getFixturePath(fileName)));
 });
 
 beforeEach(async () => {
@@ -57,7 +57,7 @@ describe('Page-loader tests without errors expecting', () => {
     await loadWebPage(inputURL, tmpDir);
 
     const savedFilePath = path.join(tmpDir, sourcePath);
-    const fixtureFilePath = path.join(getFixturePath(), sourcePath);
+    const fixtureFilePath = getFixturePath(sourcePath);
     const fixtureContent = await readFile(fixtureFilePath);
     const savedContent = await readFile(savedFilePath);
 

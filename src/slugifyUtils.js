@@ -1,17 +1,24 @@
 import path from 'path';
 
-const slugifyPath = (pathString) => pathString.replace(/\W/g, '-');
-
-const getFullSlugifiedName = (urlObj) => {
+const slugifyUrl = (urlObj) => {
   const { hostname, pathname } = urlObj;
-  const { dir, name, ext } = path.parse(`${hostname}${pathname}`);
-  const slugifiedFileName = slugifyPath(path.join(dir, name));
-  const fullName = `${slugifiedFileName}${ext || '.html'}`;
+  if (pathname === '/') {
+    return hostname.replace(/\W/g, '-');
+  }
 
-  return fullName;
+  const { dir, name } = path.parse(pathname);
+  const fileName = path.join(dir, name);
+  return `${hostname}${fileName}`.replace(/\W/g, '-');
+};
+
+const getSlugifiedResourceName = (urlObj) => {
+  const slugifiedUrl = slugifyUrl(urlObj);
+  const { hostname, pathname } = urlObj;
+  const { ext } = path.parse(`${hostname}${pathname}`);
+  return `${slugifiedUrl}${ext || '.html'}`;
 };
 
 export {
-  slugifyPath,
-  getFullSlugifiedName,
+  slugifyUrl,
+  getSlugifiedResourceName,
 };
