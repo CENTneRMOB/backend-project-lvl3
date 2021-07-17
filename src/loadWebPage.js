@@ -7,8 +7,9 @@ import { slugifyUrl } from './slugifyUtils.js';
 import extractResources from './extractResources.js';
 
 const logPageLoader = debug('page-loader');
+const axiosInstance = axios.create();
 
-const loadAndSaveFile = (fileUrl, filePath) => axios.get(fileUrl, { responseType: 'arraybuffer' })
+const downloadResource = (fileUrl, filePath) => axiosInstance.get(fileUrl, { responseType: 'arraybuffer' })
   .then((response) => fsp.writeFile(filePath, response.data));
 
 export default (inputUrl, outputPath = process.cwd()) => {
@@ -21,13 +22,17 @@ export default (inputUrl, outputPath = process.cwd()) => {
   const contentDirPath = path.resolve(outputPath, contentDirName);
   logPageLoader([slugifiedUrl, htmlFilePath, contentDirPath]);
 
-  return fsp.access(contentDirPath)
-    .catch(() => fsp.mkdir(contentDirPath))
-    .then(() => axios.get(inputUrl))
+  return axiosInstance.get(inputUrl)
+    .then((response) => fsp.access(contentDirPath)
+      .catch(() => fsp.mkdir(contentDirPath))
+      .then(() => response))
     .then((response) => {
       logPageLoader('Response', response.status);
-      const { base } = path.parse(contentDirPath);
-      const [modifiedHtml, resources] = extractResources(response.data, base, inputUrlObj.origin);
+      const [
+        modifiedHtml,
+        resources,
+      ] = extractResources(response.data, contentDirName, inputUrlObj.origin);
+
       logPageLoader(resources);
       return fsp.writeFile(htmlFilePath, modifiedHtml)
         .then(() => resources);
@@ -36,8 +41,8 @@ export default (inputUrl, outputPath = process.cwd()) => {
       const tasks = resources.map(({ resourceUrl, resourceFileName }) => ({
         title: resourceUrl,
         task: () => {
-          const fullFilePath = path.join(contentDirPath, resourceFileName);
-          return loadAndSaveFile(resourceUrl, fullFilePath);
+          const filePath = path.join(contentDirPath, resourceFileName);
+          return downloadResource(resourceUrl, filePath);
         },
       }));
       logPageLoader('tasks', tasks);

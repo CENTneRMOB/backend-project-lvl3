@@ -1,24 +1,22 @@
 import path from 'path';
 
-const slugifyUrl = (urlObj) => {
-  const { hostname, pathname } = urlObj;
-  if (pathname === '/') {
-    return hostname.replace(/\W/g, '-');
-  }
-
-  const { dir, name } = path.parse(pathname);
-  const fileName = path.join(dir, name);
-  return `${hostname}${fileName}`.replace(/\W/g, '-');
+const slugifyUrl = (url) => {
+  const { hostname, pathname } = url;
+  const words = `${hostname}${pathname}`.match(/\w+/g);
+  return words.join('-');
 };
 
-const getSlugifiedResourceName = (urlObj) => {
-  const slugifiedUrl = slugifyUrl(urlObj);
-  const { hostname, pathname } = urlObj;
-  const { ext } = path.parse(`${hostname}${pathname}`);
+const slugifyResourceUrl = (url) => {
+  const { pathname } = url;
+  const { dir, name, ext } = path.parse(pathname);
+  const resourcePathname = path.join(dir, name);
+  const resourceUrl = new URL(resourcePathname, url.origin);
+  const slugifiedUrl = slugifyUrl(resourceUrl);
+
   return `${slugifiedUrl}${ext || '.html'}`;
 };
 
 export {
   slugifyUrl,
-  getSlugifiedResourceName,
+  slugifyResourceUrl,
 };
